@@ -1,0 +1,35 @@
+{
+  "buildOnSave": false,
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "target": "es5",
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "lib": [
+      "es2015",
+      "dom",
+    ],
+    "types": [
+      "cypress",
+      "rxjs",
+      "idb"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+    ],
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "downlevelIteration": true
+  },
+  "include": [
+    "node_modules/cypress",
+    "cypress/*/*.ts",
+    "src/**/*.ts"
+  ]
+}

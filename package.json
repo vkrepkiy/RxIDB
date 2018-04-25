@@ -1,0 +1,38 @@
+{
+  "name": "rxidb",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/rxidb.js",
+  "bundleDependencies": [],
+  "keywords": [
+    "IndexedDB",
+    "RxIDB",
+    "DB",
+    "RX"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && webpack --mode production --progress",
+    "lint": "tslint -p . -c tslint.json \"src/**/*.ts\"",
+    "test": "cypress run",
+    "localize": "ng-localizer \"src\""
+  },
+  "author": "Valentin Krepkiy <valkrepkiy@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "idb": "^2.1.1",
+    "rxjs": "^6.0.0",
+    "rxjs-compat": "^6.0.0"
+  },
+  "devDependencies": {
+    "@cypress/webpack-preprocessor": "^2.0.1",
+    "@types/node": "^9.6.4",
+    "cypress": "^2.1.0",
+    "ts-loader": "^4.2.0",
+    "ts-node": "^6.0.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1",
+    "webpack": "^4.6.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.0.15"
+  }
+}
