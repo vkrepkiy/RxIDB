@@ -1,40 +1,56 @@
-import { UpgradeDB } from 'idb';
-import { Observable, of, Subject } from 'rxjs';
-
-import { RxIDBStoreOptions } from './rxidb.types';
+import { RxIDB } from './rxidb-db';
 import { RxIDBStore } from './rxidb-store';
-import { rxifySync } from './rxidb-utils';
 import { IRxIDBUpgrade } from './rxidb.interfaces';
 
 export class RxIDBUpgrade implements IRxIDBUpgrade {
-  public get oldVersion(): number {
-    return this._upgradeDB.oldVersion;
-  }
-
-  public get version(): number {
-    return this._upgradeDB.version;
-  }
+  public readonly db: IDBDatabase;
+  public readonly oldVersion: number;
+  public readonly version: number;
 
   constructor (
-    private _upgradeDB: UpgradeDB
-  ) {}
+    private _rxidb: RxIDB,
+    private _event: any
+  ) {
+    this.db         = _event.target.result;
+    this.oldVersion = _event.oldVersion;
+    this.version    = _event.newVersion;
+  }
+
+  public create(name: string, options: IDBObjectStoreParameters): RxIDBUpgradeStore {
+    let store = this.db.createObjectStore(name, options);
+    return new RxIDBUpgradeStore(name, this._rxidb, store);
+  }
+
+  public delete(name: string): void {
+    this.db.deleteObjectStore(name);
+  }
+
+  public has(name: string): boolean {
+    return this.db.objectStoreNames.contains(name);
+  }
+}
+
+export class RxIDBUpgradeStore extends RxIDBStore<any, IDBValidKey> {
+  constructor(
+    private _name: string,
+    private _rxidb: RxIDB,
+    private _store: IDBObjectStore
+  ) {
+    super(_name, _rxidb);
+  }
 
   /**
-   * TODO: support options.data
+   * Create index
    */
-  public create(key: string, options: RxIDBStoreOptions = {}): Observable<void> {
-    return rxifySync(() => {
-      let store = this._upgradeDB.createObjectStore(key, options);
-    });
+  public createIndex(name: string, keypath: string, params?: IDBIndexParameters): IDBIndex {
+    return this._store.createIndex(name, keypath, params);
   }
 
-  public delete(key: string): Observable<void> {
-    return rxifySync(() => {
-      this._upgradeDB.deleteObjectStore(key);
-    });
-  }
-
-  public has(key: string): boolean {
-    return this._upgradeDB.objectStoreNames.contains(key);
+  /**
+   * Fill DB with entries
+   */
+  public fill(entries: Iterable<any>): this {
+    Array.from(entries).forEach(entry => this._store.put(entry));
+    return this;
   }
 }

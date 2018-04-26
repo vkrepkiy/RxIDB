@@ -1,35 +1,53 @@
 import { Observable } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal-compatibility';
-import { ObjectStore, DB, Transaction } from 'idb';
+import { map, switchMap, mapTo } from 'rxjs/operators';
 
+import { RxIDB } from './rxidb-db';
 import { IRxIDBStore } from './rxidb.interfaces';
+import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 
-export class RxIDBStore implements IRxIDBStore {
+export class RxIDBStore<TValue extends any, TKey extends IDBValidKey> implements IRxIDBStore {
   constructor(
-    public key: string,
-    private _db: DB
-  ) {}
+    public name: string,
+    private _db: RxIDB
+  ) { }
 
-  delete(key: string): Observable<void> {
-    return fromPromise(
-      this._db.transaction(key, 'readwrite').objectStore(this.key).delete(key)
+  public clear(): Observable<void> {
+    return this.tx('readwrite').pipe(
+      map((tx) => tx.objectStore(this.name)),
+      map((store) => store.clear()),
+      switchMap(req => rxifyRequest(req)),
+      mapTo(undefined)
     );
   }
 
-  get(key: string): Observable<any> {
-    return fromPromise(
-      this._db.transaction(key, 'readonly').objectStore(this.key).get(key)
+  public delete(key: TKey): Observable<void> {
+    return this.tx('readwrite').pipe(
+      map((tx) => tx.objectStore(this.name)),
+      map((store) => store.delete(key)),
+      switchMap(req => rxifyRequest(req)),
+      mapTo(undefined)
     );
   }
 
-  set(key: string, value: any): Observable<void> {
-    return fromPromise(
-      this._db.transaction(key, 'readwrite').objectStore(this.key).put(key, value)
-    ).pipe(mapTo(undefined));
+  public get(key: TKey): Observable<any> {
+    return this.tx().pipe(
+      map((tx) => tx.objectStore(this.name)),
+      map(store => store.get(key)),
+      switchMap(req => rxifyRequest(req)),
+      resultFromIDBEvent
+    );
   }
 
-  tx(mode: 'readonly' | 'readwrite' = 'readonly'): Transaction {
-    return this._db.transaction(this.key, mode);
+  public set(value: TValue, key?: TKey): Observable<void> {
+    return this.tx('readwrite').pipe(
+      map((tx) => tx.objectStore(this.name)),
+      map(store => store.put(value, key)),
+      switchMap(req => rxifyRequest(req)),
+      mapTo(undefined)
+    );
+  }
+
+  public tx(mode: 'readonly' | 'readwrite' = 'readonly'): Observable<IDBTransaction> {
+    return this._db.tx(this.name, mode);
   }
 }

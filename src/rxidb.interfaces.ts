@@ -1,8 +1,7 @@
 import { Observable } from 'rxjs';
-import { Transaction } from 'idb';
 
-import { RxIDBLayeredUpgrade, RxIDBStoreOptions } from './rxidb.types';
 import { RxIDB } from './rxidb-db';
+import { RxIDBLayers } from './rxidb.types';
 import { RxIDBStore } from './rxidb-store';
 
 
@@ -14,7 +13,7 @@ export interface IRxIDBStatic {
    * Open DB:
    * RxStore.open('MyDB', 1, upgradeDB).subscribe();
    */
-  open(name: string, version: number, layers: RxIDBLayeredUpgrade): Observable<RxIDB>;
+  open(name: string, version: number, layers: RxIDBLayers): Observable<RxIDB>;
 
   /**
    * Drop DB:
@@ -31,13 +30,13 @@ export interface IRxIDBUpgrade {
    * Add store:
    * upgradeDB.addStore('MyStore', { data: new MyStore() }).subscribe();
    */
-  create(key: string, options?: RxIDBStoreOptions): Observable<void>;
+  create(key: string, options?: IDBObjectStoreParameters): void;
 
   /**
    * Delete store:
    * upgradeDB.deleteStore('MyStore').subscribe();
    */
-  delete(key: string): Observable<void>;
+  delete(key: string): void;
 
   /**
    * Has store:
@@ -50,16 +49,16 @@ export interface IRxIDBUpgrade {
  * RxIDB interface
  */
 export interface IRxIDB {
-  get(key: string): RxIDBStore;
-  transaction(storeNames: string | string[], mode?: 'readonly' | 'readwrite'): Transaction;
+  get(key: IDBValidKey): RxIDBStore<any, IDBValidKey>;
+  transaction(storeNames: string | string[], mode?: 'readonly' | 'readwrite'): IDBTransaction;
 }
 
 /**
  * RxIDBStore interface
  */
 export interface IRxIDBStore {
-  delete(key: string): Observable<void>;
-  get(key: string): Observable<any>;
-  set(key: string, value: any): Observable<void>;
-  tx(mode?: 'readonly' | 'readwrite'): Transaction;
+  delete(key: IDBValidKey): Observable<void>;
+  get(key: IDBValidKey): Observable<any>;
+  set(value: any, key?: IDBValidKey): Observable<void>;
+  tx(mode?: 'readonly' | 'readwrite'): Observable<IDBTransaction>;
 }

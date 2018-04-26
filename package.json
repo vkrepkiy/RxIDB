@@ -14,12 +14,11 @@
     "build": "rm -rf dist && webpack --mode production --progress",
     "lint": "tslint -p . -c tslint.json \"src/**/*.ts\"",
     "test": "cypress run",
-    "localize": "ng-localizer \"src\""
+    "test:open": "cypress open"
   },
   "author": "Valentin Krepkiy <valkrepkiy@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "idb": "^2.1.1",
     "rxjs": "^6.0.0",
     "rxjs-compat": "^6.0.0"
   },

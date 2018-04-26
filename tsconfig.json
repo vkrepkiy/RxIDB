@@ -2,7 +2,7 @@
   "buildOnSave": false,
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "target": "es5",
     "skipLibCheck": true,
     "module": "commonjs",
@@ -17,8 +17,7 @@
     ],
     "types": [
       "cypress",
-      "rxjs",
-      "idb"
+      "rxjs"
     ],
     "typeRoots": [
       "./node_modules/@types",

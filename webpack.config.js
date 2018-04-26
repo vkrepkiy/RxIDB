@@ -6,7 +6,7 @@ function root(p) {
 }
 
 module.exports = {
-  entry: root('src/rxidb.ts'),
+  entry: root('index.ts'),
   externals: /^(rxjs|idb)/,
   output: {
     path              : root('dist'),
