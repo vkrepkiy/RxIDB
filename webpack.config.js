@@ -6,38 +6,26 @@ function root(p) {
 }
 
 module.exports = {
-  entry: root('index.ts'),
-  externals: /^(rxjs|idb)/,
+  entry     : root('index.ts'),
+  externals : /^(rxjs)/,
   output: {
-    path              : root('dist'),
-    filename          : 'rxidb.js'
+    path     : root('dist'),
+    filename : 'rxidb.js'
   },
   devtool: 'inline-source-map',
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          chunks: 'all',
-          name: 'vendor',
-          enforce: true,
-          test: /node_modules/
-        }
-      }
-    }
-  },
   resolve: {
     modules: [
       root('node_modules'),
-      root('src')
+      root('./')
     ],
     extensions: ['.ts', '.js']
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
-        exclude: [/node_modules/],
-        use: [
+        test    : /\.ts$/,
+        exclude : [/node_modules/],
+        use     : [
           {
             loader: 'ts-loader'
           }
@@ -47,9 +35,9 @@ module.exports = {
   },
   plugins: [
     new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: root('bundleReport.html'),
-      openAnalyzer: true
+      analyzerMode   : 'static',
+      reportFilename : root('bundleReport.html'),
+      openAnalyzer   : false
     })
   ]
 }

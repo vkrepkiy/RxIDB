@@ -3,10 +3,10 @@
 This repo is "work in progress", so be aware of.
 
 ```typescript
-  import rxidb from 'rxidb';
+  import { openDB } from 'rxidb';
 
   // Open DB, provide name and db version
-  rxidb.open('MyDB', 1, [
+  openDB('MyDB', 1, [
 
     // For each Store you can describe upgrade
     // process as [dbVersion, upgradeInstaller]

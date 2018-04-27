@@ -5,7 +5,7 @@ import { RxIDB } from './rxidb-db';
 import { RxIDBLayers } from './rxidb.types';
 import { RxIDBUpgrade } from './rxidb-upgrade';
 
-export function open(dbName: string, dbVersion: number, stores?: RxIDBLayers[]): Observable<RxIDB> {
+export function openDB(dbName: string, dbVersion: number, stores?: RxIDBLayers[]): Observable<RxIDB> {
   let db$: Subject<RxIDB> = new Subject();
   let upgrade$: Subject<void> = new Subject();
   let request: IDBOpenDBRequest = indexedDB.open(dbName, dbVersion);
@@ -62,7 +62,7 @@ export function setupLayers(rxIDBUpgrade: RxIDBUpgrade, layers: RxIDBLayers = ne
   return observables;
 }
 
-export function drop(dbName: string): Observable<void> {
+export function dropDB(dbName: string): Observable<void> {
   return Observable.create((observer: Observer<void>) => {
     let request = indexedDB.deleteDatabase(dbName);
 
@@ -72,4 +72,4 @@ export function drop(dbName: string): Observable<void> {
   }).pipe(take(1));
 }
 
-export const rxidb = { open, drop };
+export const rxidb = { openDB, dropDB };

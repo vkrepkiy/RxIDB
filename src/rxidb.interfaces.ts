@@ -4,24 +4,6 @@ import { RxIDB } from './rxidb-db';
 import { RxIDBLayers } from './rxidb.types';
 import { RxIDBStore } from './rxidb-store';
 
-
-/**
- * Setup RxStore by creating or removing DB
- */
-export interface IRxIDBStatic {
-  /**
-   * Open DB:
-   * RxStore.open('MyDB', 1, upgradeDB).subscribe();
-   */
-  open(name: string, version: number, layers: RxIDBLayers): Observable<RxIDB>;
-
-  /**
-   * Drop DB:
-   * RxStore.drop('MyDB').subscribe();
-   */
-  drop(name: string): Observable<void>;
-}
-
 /**
  * RxIDBUpgrade provides common interface for store.
  */

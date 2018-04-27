@@ -1,10 +1,11 @@
-import { open, drop } from 'rxidb-static';
-import { RxIDBLayers } from 'rxidb.types';
-import { RxIDBUpgrade } from 'rxidb-upgrade';
-import { RxIDBStore } from 'rxidb-store';
-import { RxIDB } from 'rxidb-db';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+
+import { RxIDB } from 'src/rxidb-db';
+import { openDB, dropDB } from 'src/rxidb-static';
+import { RxIDBLayers } from 'src/rxidb.types';
+import { RxIDBUpgrade } from 'src/rxidb-upgrade';
+import { RxIDBStore } from 'src/rxidb-store';
 
 describe('RxIDB', () => {
   let rxIDB: RxIDB;
@@ -26,7 +27,7 @@ describe('RxIDB', () => {
   ]);
 
   beforeEach((done) => {
-    open('DB', 1, [LAYERS]).subscribe((rxidb) => {
+    openDB('DB', 1, [LAYERS]).subscribe((rxidb) => {
       rxIDB = rxidb;
       done();
     }, done);
@@ -35,7 +36,7 @@ describe('RxIDB', () => {
   afterEach((done) => {
     rxIDB.close();
     rxIDB = null as any;
-    drop('DB').subscribe(done, done);
+    dropDB('DB').subscribe(done, done);
   });
 
   it('is instance of RxIDB' , () => {
