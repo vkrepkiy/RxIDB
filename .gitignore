@@ -1,6 +1,5 @@
 .awcache
 .DS_Store
-dist/
 node_modules/
 analyze
 cypress/videos
