@@ -2,5 +2,4 @@ cypress*
 jest.*
 webpack.config.js
 .nvmrc
-tsconfig.json
 tslint.json

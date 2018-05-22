@@ -5,7 +5,7 @@ import { RxIDB } from './rxidb-db';
 import { IRxIDBStore } from './rxidb.interfaces';
 import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 
-export class RxIDBStore<TValue extends any, TKey extends IDBValidKey> implements IRxIDBStore {
+export class RxIDBStore<TValue extends any = any, TKey extends IDBValidKey = IDBValidKey> implements IRxIDBStore {
   constructor(
     public name: string,
     private _db: RxIDB
