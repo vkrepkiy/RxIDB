@@ -63,7 +63,8 @@ export class RxIDBStore<TValue extends any = any, TKey extends IDBValidKey = IDB
     let done$   = new Subject();
 
     return cursor$.pipe(
-      tap(cursor => cursor ? cursor.continue() : done$.next()),
+      tap(cursor => !!cursor ? cursor.continue() : done$.next()),
+      filter(cursor => !!cursor),
       map(cursor => cursor.value),
       bufferWhen(() => done$)
     );
