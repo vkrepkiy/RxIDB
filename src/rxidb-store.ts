@@ -1,5 +1,5 @@
 import { Observable, Subject, merge } from 'rxjs';
-import { map, switchMap, mapTo, tap, filter, bufferWhen } from 'rxjs/operators';
+import { map, switchMap, mapTo, tap, filter, bufferWhen, shareReplay, take } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
 import { IRxIDBStore } from './rxidb.interfaces';
@@ -16,6 +16,8 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
   public data$: Observable<Model[]> = merge(
     this.getAll(),
     this._update$.pipe(switchMap(() => this.getAll()))
+  ).pipe(
+    shareReplay(1)
   );
 
   constructor(
@@ -73,7 +75,8 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       tap(cursor => !!cursor ? cursor.continue() : done$.next()),
       filter(cursor => !!cursor),
       map(cursor => cursor.value),
-      bufferWhen(() => done$)
+      bufferWhen(() => done$),
+      take(1)
     );
   }
 

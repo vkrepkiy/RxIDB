@@ -5,6 +5,8 @@ import { IRxIDB } from './rxidb.interfaces';
 import { RxIDBStore } from './rxidb-store';
 
 export class RxIDB implements IRxIDB {
+  private _storeCache: {[key: string]: RxIDBStore} = {};
+
   constructor (
     public readonly idb: IDBDatabase
   ) {}
@@ -17,10 +19,14 @@ export class RxIDB implements IRxIDB {
   }
 
   /**
-   * Stream: get store
+   * Get store
    */
   public get(key: string): RxIDBStore {
-    return new RxIDBStore(key, this);
+    if (this._storeCache[key]) {
+      return this._storeCache[key];
+    }
+
+    return this._storeCache[key] = new RxIDBStore(key, this);
   }
 
   /**
