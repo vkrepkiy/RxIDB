@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
 import { RxIDB } from 'src/rxidb-db';
 import { openDB, dropDB } from 'src/rxidb-static';
@@ -76,6 +76,19 @@ describe('RxIDB', () => {
       switchMap(() => store.get(CHECK_KEY))
     ).subscribe((val) => {
       expect(val).to.eq(undefined);
+      done();
+    });
+  });
+
+  it('can get all entries', (done) => {
+    const store = rxIDB.get(STORE_NAME);
+
+    store.set(Object.assign({}, ENTRY, { [STORE_KEY]: 'any' })).pipe(
+      switchMap(() => store.getAll()),
+      take(1)
+    ).subscribe(data => {
+      assert.isArray(data);
+      assert.lengthOf(data, 2);
       done();
     });
   });
