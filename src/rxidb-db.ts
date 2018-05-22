@@ -19,7 +19,7 @@ export class RxIDB implements IRxIDB {
   /**
    * Stream: get store
    */
-  public get(key: string): RxIDBStore<any, IDBValidKey> {
+  public get(key: string): RxIDBStore {
     return new RxIDBStore(key, this);
   }
 

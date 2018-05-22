@@ -31,7 +31,7 @@ export interface IRxIDBUpgrade {
  * RxIDB interface
  */
 export interface IRxIDB {
-  get(key: IDBValidKey): RxIDBStore<any, IDBValidKey>;
+  get(key: IDBValidKey): RxIDBStore;
   transaction(storeNames: string | string[], mode?: 'readonly' | 'readwrite'): IDBTransaction;
 }
 

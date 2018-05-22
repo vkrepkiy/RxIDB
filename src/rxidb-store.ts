@@ -1,15 +1,22 @@
-import { Observable, Subject } from 'rxjs';
-import { map, switchMap, mapTo, tap, scan, filter, takeUntil, takeWhile, bufferWhen, buffer, take, delay } from 'rxjs/operators';
+import { Observable, Subject, merge } from 'rxjs';
+import { map, switchMap, mapTo, tap, filter, bufferWhen } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
 import { IRxIDBStore } from './rxidb.interfaces';
 import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 
 type RxIDBCursorRange = string | number | IDBKeyRange | Date | IDBArrayKey | undefined;
+type TValue = any;
+type TKey = IDBValidKey;
 
-export class RxIDBStore<TValue extends any = any, TKey extends IDBValidKey = IDBValidKey> implements IRxIDBStore {
+export class RxIDBStore<Model = any> implements IRxIDBStore {
   private _update$: Subject<void> = new Subject();
   public update$: Observable<any> = this._update$.asObservable();
+
+  public data$: Observable<Model[]> = merge(
+    this.getAll(),
+    this._update$.pipe(switchMap(() => this.getAll()))
+  );
 
   constructor(
     public name: string,

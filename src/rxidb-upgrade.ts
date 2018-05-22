@@ -2,7 +2,7 @@ import { RxIDB } from './rxidb-db';
 import { RxIDBStore } from './rxidb-store';
 import { IRxIDBUpgrade } from './rxidb.interfaces';
 
-export class RxIDBUpgradeStore extends RxIDBStore<any, IDBValidKey> {
+export class RxIDBUpgradeStore extends RxIDBStore {
   constructor(
     private _name: string,
     private _rxidb: RxIDB,
