@@ -1,4 +1,4 @@
-import { Observable, Subject, merge } from 'rxjs';
+import { Observable, Subject, merge, forkJoin } from 'rxjs';
 import { map, switchMap, mapTo, tap, filter, bufferWhen, shareReplay, take } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
@@ -55,6 +55,23 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       switchMap(req => rxifyRequest(req)),
       tap(() => this._triggerUpdate()),
       mapTo(undefined)
+    );
+  }
+
+  public reset(collection: TValue[]): Observable<any> {
+    return this.tx('readwrite').pipe(
+      map((tx) => tx.objectStore(this.name)),
+      switchMap(store => rxifyRequest(store.clear()).pipe(take(1), mapTo(store))),
+      map(store => {
+        return collection.map(value => {
+          return rxifyRequest(store.put(value)).pipe(
+            take(1),
+            resultFromIDBEvent
+          );
+        });
+      }),
+      switchMap((tasks: Observable<any>[]) => forkJoin(tasks)),
+      tap(() => this._triggerUpdate())
     );
   }
 
