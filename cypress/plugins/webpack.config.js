@@ -6,7 +6,7 @@ function root(p) {
 
 module.exports = {
   mode: 'development',
-  entry: root('src/rxidb.d.ts'),
+  entry: root('rxidb.ts'),
   resolve: {
     modules: [
       root('node_modules'),

@@ -3,6 +3,8 @@
   "version": "0.1.4",
   "description": "RxJS wrapper for IndexedDB",
   "bundleDependencies": [],
+  "main": "dist/rxidb.js",
+  "types": "dist/rxidb.d.ts",
   "keywords": [
     "IndexedDB",
     "RxIDB",
@@ -13,7 +15,10 @@
     "build": "rm -rf dist && webpack --mode production --progress",
     "lint": "tslint -p ./ -c tslint.json 'src/**/*.ts'",
     "test": "cypress run",
-    "test:open": "cypress open"
+    "test:open": "cypress open",
+    "preversion": "npm run test",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "author": "Valentin Krepkiy <valkrepkiy@gmail.com>",
   "license": "Apache-2.0",
@@ -25,18 +30,16 @@
     "type": "git",
     "url": "git://github.com/vkrepkiy/RxIDB.git"
   },
-  "peerDependencies": {
-    "rxjs": "^6.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^2.0.1",
-    "cypress": "^2.1.0",
-    "rxjs": "^6.0.0",
-    "ts-loader": "^4.2.0",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.1",
+    "cypress": "^3.0.1",
+    "rxjs": "^6.2.0",
+    "ts-loader": "^4.4.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.1",
     "webpack": "^4.6.0",
-    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^2.0.15"
   }
 }

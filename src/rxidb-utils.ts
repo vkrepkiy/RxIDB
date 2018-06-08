@@ -1,5 +1,5 @@
-import { Subject, Observable, ReplaySubject, Observer } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 /**
  * Resolve request as an Observable

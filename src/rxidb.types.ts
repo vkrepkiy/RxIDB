@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 
 import { RxIDBUpgrade } from './rxidb-upgrade';
-import { RxIDB } from './rxidb-db';
 
 export type RxIDBLayerInstaller = (db: RxIDBUpgrade) => Observable<any>|void;
 

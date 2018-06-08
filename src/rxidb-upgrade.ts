@@ -4,8 +4,8 @@ import { IRxIDBUpgrade } from './rxidb.interfaces';
 
 export class RxIDBUpgradeStore extends RxIDBStore {
   constructor(
-    private _name: string,
-    private _rxidb: RxIDB,
+    _name: string,
+    _rxidb: RxIDB,
     private _store: IDBObjectStore
   ) {
     super(_name, _rxidb);
@@ -34,7 +34,7 @@ export class RxIDBUpgrade implements IRxIDBUpgrade {
 
   constructor (
     private _rxidb: RxIDB,
-    private _event: any
+    _event: any
   ) {
     this.db         = _event.target.result;
     this.oldVersion = _event.oldVersion;

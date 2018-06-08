@@ -1,7 +1,5 @@
 import { Observable } from 'rxjs';
 
-import { RxIDB } from './rxidb-db';
-import { RxIDBLayers } from './rxidb.types';
 import { RxIDBStore } from './rxidb-store';
 
 /**

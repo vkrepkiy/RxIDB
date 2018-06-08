@@ -1,4 +1,4 @@
-import { Observable, forkJoin, Subject, from, of, Observer } from 'rxjs';
+import { Observable, forkJoin, Subject, of, Observer } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';

@@ -3,6 +3,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "declaration": true,
+    "declarationDir": "./",
     "target": "es5",
     "skipLibCheck": true,
     "module": "commonjs",
@@ -10,6 +12,8 @@
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "strictNullChecks": true,
     "lib": [
       "es2015",
@@ -27,8 +31,8 @@
     "downlevelIteration": true
   },
   "include": [
-    "node_modules/cypress",
-    "cypress/*/*.ts",
-    "src/**/*.ts"
-  ]
+    "./src/**/*.ts",
+    "./cypress/**/*.ts"
+  ],
+  "exclude": []
 }

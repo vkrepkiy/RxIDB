@@ -3,3 +3,6 @@ jest.*
 webpack.config.js
 .nvmrc
 tslint.json
+tsconfig.json
+src
+package-lock.json

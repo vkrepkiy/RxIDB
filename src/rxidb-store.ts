@@ -5,9 +5,7 @@ import { RxIDB } from './rxidb-db';
 import { IRxIDBStore } from './rxidb.interfaces';
 import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 
-type RxIDBCursorRange = string | number | IDBKeyRange | Date | IDBArrayKey | undefined;
-type TValue = any;
-type TKey = IDBValidKey;
+export type RxIDBCursorRange = string | number | IDBKeyRange | Date | IDBArrayKey | undefined;
 
 export class RxIDBStore<Model = any> implements IRxIDBStore {
   private _update$: Subject<void> = new Subject();
@@ -48,7 +46,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
     );
   }
 
-  public delete(key: TKey): Observable<void> {
+  public delete(key: IDBValidKey): Observable<void> {
     return this.tx('readwrite').pipe(
       map((tx) => tx.objectStore(this.name)),
       map((store) => store.delete(key)),
@@ -58,7 +56,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
     );
   }
 
-  public reset(collection: TValue[]): Observable<any> {
+  public reset(collection: any[]): Observable<any> {
     return this.tx('readwrite').pipe(
       map((tx) => tx.objectStore(this.name)),
       switchMap(store => rxifyRequest(store.clear()).pipe(take(1), mapTo(store))),
@@ -75,7 +73,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
     );
   }
 
-  public get(key: TKey): Observable<any> {
+  public get(key: IDBValidKey): Observable<any> {
     return this.tx().pipe(
       map((tx) => tx.objectStore(this.name)),
       map(store => store.get(key)),
@@ -97,7 +95,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
     );
   }
 
-  public set(value: TValue, key?: TKey): Observable<any> {
+  public set(value: any, key?: IDBValidKey): Observable<any> {
     return this.tx('readwrite').pipe(
       map((tx) => tx.objectStore(this.name)),
       map(store => store.put(value, key)),
