@@ -1,9 +1,9 @@
 import { switchMap, take } from 'rxjs/operators';
 
-import { RxIDB } from 'src/rxidb-db';
-import { openDB, dropDB } from 'src/rxidb-static';
-import { RxIDBLayers } from 'src/rxidb.types';
-import { RxIDBUpgrade } from 'src/rxidb-upgrade';
+import { RxIDB } from '../../src/rxidb-db';
+import { openDB, dropDB } from '../../src/rxidb-static';
+import { RxIDBLayers } from '../../src/rxidb.types';
+import { RxIDBUpgrade } from '../../src/rxidb-upgrade';
 
 describe('RxIDB', () => {
   let rxIDB: RxIDB;

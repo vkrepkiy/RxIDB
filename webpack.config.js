@@ -7,10 +7,15 @@ function root(p) {
 
 module.exports = {
   entry     : root('rxidb.ts'),
-  externals : /^(rxjs)/,
+  externals : [
+    'rxjs',
+    'rxjs/operators'
+  ],
   output: {
-    path     : root('dist'),
-    filename : 'rxidb.js'
+    path          : root('dist'),
+    filename      : 'rxidb.js',
+    library       : 'rxidb',
+    libraryTarget : 'umd',
   },
   devtool: 'inline-source-map',
   resolve: {

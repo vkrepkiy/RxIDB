@@ -31,8 +31,7 @@
     "downlevelIteration": true
   },
   "include": [
-    "./src/**/*.ts",
-    "./cypress/**/*.ts"
+    "./src/**/*.ts"
   ],
   "exclude": []
 }
