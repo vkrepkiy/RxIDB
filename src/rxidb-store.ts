@@ -11,9 +11,10 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
   private _update$: Subject<void> = new Subject();
   public update$: Observable<any> = this._update$.asObservable();
 
+  private _dataUpdate$: Subject<Model[]> = new Subject();
   public data$: Observable<Model[]> = merge(
     this.getAll(),
-    this._update$.pipe(switchMap(() => this.getAll()))
+    this._dataUpdate$
   ).pipe(
     shareReplay(1)
   );
@@ -28,7 +29,12 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map((tx) => tx.objectStore(this.name)),
       map((store) => store.clear()),
       switchMap(req => rxifyRequest(req)),
-      tap(() => this._triggerUpdate()),
+      switchMap(result => {
+        return this._refreshDataStream().pipe(
+          mapTo(result)
+        );
+      }),
+      take(1),
       mapTo(undefined)
     );
   }
@@ -51,7 +57,12 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map((tx) => tx.objectStore(this.name)),
       map((store) => store.delete(key)),
       switchMap(req => rxifyRequest(req)),
-      tap(() => this._triggerUpdate()),
+      switchMap(result => {
+        return this._refreshDataStream().pipe(
+          mapTo(result)
+        );
+      }),
+      take(1),
       mapTo(undefined)
     );
   }
@@ -69,7 +80,12 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
         });
       }),
       switchMap((tasks: Observable<any>[]) => forkJoin(tasks)),
-      tap(() => this._triggerUpdate())
+      switchMap(result => {
+        return this._refreshDataStream().pipe(
+          mapTo(result)
+        );
+      }),
+      take(1)
     );
   }
 
@@ -82,7 +98,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
     );
   }
 
-  public getAll(): Observable<any> {
+  public getAll(): Observable<Model[]> {
     let cursor$ = this.cursor();
     let done$   = new Subject();
 
@@ -100,8 +116,12 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map((tx) => tx.objectStore(this.name)),
       map(store => store.put(value, key)),
       switchMap(req => rxifyRequest(req)),
-      tap(() => this._triggerUpdate()),
-      resultFromIDBEvent
+      resultFromIDBEvent,
+      switchMap(result => {
+        return this._refreshDataStream().pipe(
+          mapTo(result)
+        );
+      })
     );
   }
 
@@ -112,7 +132,9 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
   /**
    * Trigger update stream
    */
-  private _triggerUpdate() {
-    this._update$.next();
+  private _refreshDataStream(): Observable<any> {
+    return this.getAll().pipe(
+      tap(data => this._dataUpdate$.next(data))
+    );
   }
 }

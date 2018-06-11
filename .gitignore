@@ -3,4 +3,5 @@
 node_modules/
 analyze
 cypress/videos
+cypress/screenshots
 bundleReport.html

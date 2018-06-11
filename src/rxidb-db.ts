@@ -32,7 +32,10 @@ export class RxIDB implements IRxIDB {
   /**
    * Stream: IDBTransaction
    */
-  public tx(store: string | string[], mode: 'readonly' | 'readwrite' = 'readonly'): Observable<IDBTransaction> {
+  public tx(
+    store: string | string[],
+    mode: 'readonly' | 'readwrite' = 'readonly'
+  ): Observable<IDBTransaction> {
     return of(null).pipe(
       map(() => this.idb.transaction(store, mode))
     );
@@ -41,7 +44,10 @@ export class RxIDB implements IRxIDB {
   /**
    * Open IDBTransaction
    */
-  public transaction(store: string|string[], mode: 'readonly'|'readwrite' = 'readonly'): IDBTransaction {
+  public transaction(
+    store: string|string[],
+    mode: 'readonly'|'readwrite' = 'readonly'
+  ): IDBTransaction {
     return this.idb.transaction(store, mode);
   }
 }

@@ -7,6 +7,7 @@ export declare class RxIDBStore<Model = any> implements IRxIDBStore {
     private _db;
     private _update$;
     update$: Observable<any>;
+    private _dataUpdate$;
     data$: Observable<Model[]>;
     constructor(name: string, _db: RxIDB);
     clear(): Observable<void>;
@@ -14,11 +15,11 @@ export declare class RxIDBStore<Model = any> implements IRxIDBStore {
     delete(key: IDBValidKey): Observable<void>;
     reset(collection: any[]): Observable<any>;
     get(key: IDBValidKey): Observable<any>;
-    getAll(): Observable<any>;
+    getAll(): Observable<Model[]>;
     set(value: any, key?: IDBValidKey): Observable<any>;
     tx(mode?: 'readonly' | 'readwrite'): Observable<IDBTransaction>;
     /**
      * Trigger update stream
      */
-    private _triggerUpdate;
+    private _refreshDataStream;
 }

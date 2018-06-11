@@ -1,9 +1,10 @@
-import { switchMap, take } from 'rxjs/operators';
+import { switchMap, take, tap, takeUntil, retry } from 'rxjs/operators';
 
 import { RxIDB } from '../../src/rxidb-db';
 import { openDB, dropDB } from '../../src/rxidb-static';
 import { RxIDBLayers } from '../../src/rxidb.types';
 import { RxIDBUpgrade } from '../../src/rxidb-upgrade';
+import { of, Subject } from 'rxjs';
 
 describe('RxIDB', () => {
   let rxIDB: RxIDB;
@@ -89,5 +90,33 @@ describe('RxIDB', () => {
       assert.lengthOf(data, 2);
       done();
     });
+  });
+
+  it('Updates data efficiently', (done) => {
+    const store = rxIDB.get(STORE_NAME);
+    const done$ = new Subject();
+    let counter = 0;
+    let expected = 0;
+
+    store.data$.pipe(
+      takeUntil(done$)
+    ).subscribe(() => counter++);
+
+    store.data$.pipe(
+      take(1)
+    ).subscribe(() => expected++);
+
+    of(null).pipe(
+      switchMap(() => {
+        expected++;
+        return store.set({});
+      }),
+      switchMap(() => store.data$),
+      tap(() => expect(counter).to.eq(expected)),
+      retry(7)
+    ).subscribe(() => {
+      done$.next();
+      done();
+    }, (e) => done(e));
   });
 });

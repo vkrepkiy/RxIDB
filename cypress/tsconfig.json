@@ -2,7 +2,7 @@
   "buildOnSave": false,
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "../",
     "declaration": true,
     "declarationDir": "./",
     "target": "es5",
@@ -31,7 +31,7 @@
     "downlevelIteration": true
   },
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": []
 }
