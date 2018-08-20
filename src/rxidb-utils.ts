@@ -4,11 +4,15 @@ import { map } from 'rxjs/operators';
 /**
  * Resolve request as an Observable
  */
-export function rxifyRequest(request: IDBRequest): Observable<any> {
+export function rxifyRequest(
+  request: IDBRequest,
+  successCbs: any[] = ['onsuccess'],
+  errorCbs: any[] = ['onerror']
+): Observable<any> {
   let request$: Subject<any> = new Subject();
 
-  request.onerror   = (e: any) => request$.error(e);
-  request.onsuccess = (e: any) => request$.next(e);
+  successCbs.forEach(key => request[key] = (e: any) => request$.next(e));
+  errorCbs.forEach(key => request[key] = (e: any) => request$.error(e));
 
   return request$;
 }

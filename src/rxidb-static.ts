@@ -1,5 +1,5 @@
 import { Observable, forkJoin, Subject, of, Observer } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take, map, switchMap } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
 import { RxIDBLayers } from './rxidb.types';
@@ -8,12 +8,12 @@ import { RxIDBUpgrade } from './rxidb-upgrade';
 export function openDB(dbName: string, dbVersion: number, stores?: RxIDBLayers[]): Observable<RxIDB> {
   let db$: Subject<RxIDB> = new Subject();
   let upgrade$: Subject<void> = new Subject();
-  let request: IDBOpenDBRequest = indexedDB.open(dbName, dbVersion);
   let rxIDB: RxIDB;
 
-  request.onerror         = (e: any) => db$.error(e);
-  request.onblocked       = (e: any) => db$.error(e);
-  request.onsuccess       = (event: any) => {
+  let _onError   = (e: any) => db$.error(e);
+  let _onBlocked = (e: any) => db$.error(e);
+
+  let _onSuccess = (event: any) => {
     rxIDB = rxIDB || new RxIDB(event.target.result);
     db$.next(rxIDB);
     db$.complete();
@@ -21,23 +21,39 @@ export function openDB(dbName: string, dbVersion: number, stores?: RxIDBLayers[]
     if (dbVersion === rxIDB.idb.version) {
       upgrade$.next();
       upgrade$.complete();
+    } else {
+      upgrade$.error('Upgrade error');
     }
   };
-  request.onupgradeneeded = (event: any) => {
+
+  let _onUpgradeNeeded = (event: any) => {
     rxIDB = rxIDB || new RxIDB(event.target.result);
-    onUpgradeEnded(new RxIDBUpgrade(rxIDB, event), stores).subscribe(
-      () => upgrade$.next(),
+
+    onUpgradeNeeded(new RxIDBUpgrade(rxIDB, event), stores).subscribe(
+      ()  => upgrade$.next(),
       (e) => upgrade$.error(e),
-      () => upgrade$.complete()
+      ()  => upgrade$.complete()
     );
   };
 
-  return forkJoin([db$, upgrade$]).pipe(
-    map(() => rxIDB)
+  return of(null).pipe(
+    map(() => indexedDB.open(dbName, dbVersion)),
+    switchMap((request: IDBOpenDBRequest) => {
+      Object.assign(request, {
+        onerror        : _onError,
+        onblocked      : _onBlocked,
+        onsuccess      : _onSuccess,
+        onupgradeneeded : (e: any) => _onUpgradeNeeded(e)
+      });
+
+      return forkJoin([db$, upgrade$]).pipe(
+        map(() => rxIDB)
+      );
+    })
   );
 }
 
-export function onUpgradeEnded(rxIDBUpgrade: RxIDBUpgrade, stores?: RxIDBLayers[]): Observable<any> {
+export function onUpgradeNeeded(rxIDBUpgrade: RxIDBUpgrade, stores?: RxIDBLayers[]): Observable<any> {
   if (!stores || !stores.length) {
     return of(null);
   }
