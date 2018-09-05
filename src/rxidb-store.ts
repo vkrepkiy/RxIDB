@@ -1,4 +1,4 @@
-import { Observable, Subject, merge, forkJoin } from 'rxjs';
+import { Observable, Subject, merge, forkJoin, BehaviorSubject } from 'rxjs';
 import { map, switchMap, mapTo, tap, filter, bufferWhen, shareReplay, take } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
@@ -8,9 +8,6 @@ import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 export type RxIDBCursorRange = string | number | IDBKeyRange | Date | IDBArrayKey | undefined;
 
 export class RxIDBStore<Model = any> implements IRxIDBStore {
-  private _update$: Subject<void> = new Subject();
-  public update$: Observable<any> = this._update$.asObservable();
-
   private _dataUpdate$: Subject<Model[]> = new Subject();
   public data$: Observable<Model[]> = merge(
     this.getAll(),
@@ -18,6 +15,12 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
   ).pipe(
     shareReplay(1)
   );
+
+  /**
+   * Stream: data change time stamp
+   */
+  private _dataTs$: BehaviorSubject<number> = new BehaviorSubject(-1);
+  public dataTs$: Observable<number> = this._dataTs$.asObservable();
 
   constructor(
     public name: string,
@@ -134,7 +137,10 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
    */
   private _refreshDataStream(): Observable<any> {
     return this.getAll().pipe(
-      tap(data => this._dataUpdate$.next(data))
+      tap(data => {
+        this._dataTs$.next(Date.now());
+        this._dataUpdate$.next(data);
+      })
     );
   }
 }

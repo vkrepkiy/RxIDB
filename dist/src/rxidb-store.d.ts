@@ -5,10 +5,13 @@ export declare type RxIDBCursorRange = string | number | IDBKeyRange | Date | ID
 export declare class RxIDBStore<Model = any> implements IRxIDBStore {
     name: string;
     private _db;
-    private _update$;
-    update$: Observable<any>;
     private _dataUpdate$;
     data$: Observable<Model[]>;
+    /**
+     * Stream: data change time stamp
+     */
+    private _dataTs$;
+    dataTs$: Observable<number>;
     constructor(name: string, _db: RxIDB);
     clear(): Observable<void>;
     cursor(mode?: 'readonly' | 'readwrite', range?: RxIDBCursorRange, direction?: IDBCursorDirection): Observable<IDBCursorWithValue>;
