@@ -1,4 +1,4 @@
-import { Observable, Subject, merge, forkJoin, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, merge, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, switchMap, mapTo, tap, filter, bufferWhen, shareReplay, take } from 'rxjs/operators';
 
 import { RxIDB } from './rxidb-db';
@@ -7,8 +7,18 @@ import { rxifyRequest, resultFromIDBEvent } from './rxidb-utils';
 
 export type RxIDBCursorRange = string | number | IDBKeyRange | Date | IDBArrayKey | undefined;
 
+const UPDATE_EACH: string = '__each__';
+
 export class RxIDBStore<Model = any> implements IRxIDBStore {
   private _dataUpdate$: Subject<Model[]> = new Subject();
+
+  private _dataUpdateKey$: Subject<IDBValidKey> = new Subject();
+
+  public keyPath$ = this.tx('readwrite').pipe(
+    map((tx) => tx.objectStore(this.name)),
+    map((store) => store.keyPath)
+  ) as Observable<string|null>;
+
   public data$: Observable<Model[]> = merge(
     this.getAll(),
     this._dataUpdate$
@@ -32,11 +42,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map((tx) => tx.objectStore(this.name)),
       map((store) => store.clear()),
       switchMap(req => rxifyRequest(req)),
-      switchMap(result => {
-        return this._refreshDataStream().pipe(
-          mapTo(result)
-        );
-      }),
+      switchMap(result => this._refreshDataStream(result)),
       take(1),
       mapTo(undefined)
     );
@@ -60,11 +66,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map((tx) => tx.objectStore(this.name)),
       map((store) => store.delete(key)),
       switchMap(req => rxifyRequest(req)),
-      switchMap(result => {
-        return this._refreshDataStream().pipe(
-          mapTo(result)
-        );
-      }),
+      switchMap(result => this._refreshDataStream(result, key)),
       take(1),
       mapTo(undefined)
     );
@@ -83,17 +85,14 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
         });
       }),
       switchMap((tasks: Observable<any>[]) => forkJoin(tasks)),
-      switchMap(result => {
-        return this._refreshDataStream().pipe(
-          mapTo(result)
-        );
-      }),
+      switchMap(result => this._refreshDataStream(result, UPDATE_EACH)),
       take(1)
     );
   }
 
   public get(key: IDBValidKey): Observable<any> {
-    return this.tx().pipe(
+    return merge(of(null), this._getUpdatesFor(key)).pipe(
+      switchMap(() => this.tx()),
       map((tx) => tx.objectStore(this.name)),
       map(store => store.get(key)),
       switchMap(req => rxifyRequest(req)),
@@ -120,11 +119,7 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
       map(store => store.put(value, key)),
       switchMap(req => rxifyRequest(req)),
       resultFromIDBEvent,
-      switchMap(result => {
-        return this._refreshDataStream().pipe(
-          mapTo(result)
-        );
-      })
+      switchMap(result => this._refreshDataStream(result, key))
     );
   }
 
@@ -135,12 +130,21 @@ export class RxIDBStore<Model = any> implements IRxIDBStore {
   /**
    * Trigger update stream
    */
-  private _refreshDataStream(): Observable<any> {
+  private _refreshDataStream<T>(result: T, key: IDBValidKey = UPDATE_EACH): Observable<T> {
     return this.getAll().pipe(
-      tap(data => {
+      take(1),
+      tap((data) => {
         this._dataTs$.next(Date.now());
         this._dataUpdate$.next(data);
-      })
+        this._dataUpdateKey$.next(key);
+      }),
+      mapTo(result)
+    );
+  }
+
+  private _getUpdatesFor(key: IDBValidKey): Observable<any> {
+    return this._dataUpdateKey$.pipe(
+      filter(_key => key === _key)
     );
   }
 }

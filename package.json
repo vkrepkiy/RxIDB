@@ -31,10 +31,13 @@
     "url": "git://github.com/vkrepkiy/RxIDB.git"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "rxjs": "^6.3.3"
+  },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^2.0.1",
     "cypress": "^3.1.0",
-    "rxjs": "^6.2.2",
+    "rxjs": "^6.3.3",
     "ts-loader": "^4.5.0",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1",

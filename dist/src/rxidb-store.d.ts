@@ -6,6 +6,8 @@ export declare class RxIDBStore<Model = any> implements IRxIDBStore {
     name: string;
     private _db;
     private _dataUpdate$;
+    private _dataUpdateKey$;
+    keyPath$: Observable<string | null>;
     data$: Observable<Model[]>;
     /**
      * Stream: data change time stamp
@@ -25,4 +27,5 @@ export declare class RxIDBStore<Model = any> implements IRxIDBStore {
      * Trigger update stream
      */
     private _refreshDataStream;
+    private _getUpdatesFor;
 }

@@ -35,7 +35,9 @@ describe('RxIDB', () => {
   afterEach((done) => {
     rxIDB.close();
     rxIDB = null as any;
-    dropDB('DB').subscribe(done, done);
+    dropDB('DB').subscribe(() => {
+      done();
+    }, done);
   });
 
   it('is instance of RxIDB' , () => {
@@ -45,7 +47,9 @@ describe('RxIDB', () => {
   it('should have entry from upgrade stage', (done) => {
     let store = rxIDB.get(STORE_NAME);
 
-    store.get(CHECK_KEY).subscribe((val) => {
+    store.get(CHECK_KEY).pipe(
+      take(1)
+    ).subscribe((val) => {
       expect(val).to.eql(ENTRY);
       done();
     }, done);
@@ -60,23 +64,26 @@ describe('RxIDB', () => {
     };
 
     store.set(CHECK_2).pipe(
-      switchMap(() => store.get(NEW_KEY))
+      switchMap(() => store.get(NEW_KEY)),
+      take(1)
     ).subscribe((val) => {
       expect(val).to.eql(CHECK_2);
       done();
-    });
+    }, done);
   });
 
   it('can remove entry', (done) => {
     const store = rxIDB.get(STORE_NAME);
 
     store.get(CHECK_KEY).pipe(
+      take(1),
       switchMap(() => store.delete(CHECK_KEY)),
-      switchMap(() => store.get(CHECK_KEY))
+      switchMap(() => store.get(CHECK_KEY)),
+      take(1)
     ).subscribe((val) => {
       expect(val).to.eq(undefined);
       done();
-    });
+    }, done);
   });
 
   it('can get all entries', (done) => {
@@ -89,7 +96,7 @@ describe('RxIDB', () => {
       assert.isArray(data);
       assert.lengthOf(data, 2);
       done();
-    });
+    }, done);
   });
 
   it('Updates data efficiently', (done) => {
@@ -117,6 +124,6 @@ describe('RxIDB', () => {
     ).subscribe(() => {
       done$.next();
       done();
-    }, (e) => done(e));
+    }, done);
   });
 });
