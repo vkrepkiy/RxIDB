@@ -5,44 +5,49 @@ function root(p) {
   return path.resolve(`${__dirname}/${p}`);
 }
 
-module.exports = {
-  entry     : root('rxidb.ts'),
-  externals : [
-    'rxjs',
-    'rxjs/operators'
-  ],
-  output: {
-    path          : root('dist'),
-    filename      : 'rxidb.js',
-    library       : 'rxidb',
-    libraryTarget : 'umd',
-  },
-  devtool: 'inline-source-map',
-  resolve: {
-    modules: [
-      root('node_modules'),
-      root('./')
+module.exports = function (env) {
+  return {
+    entry     : root('rxidb.ts'),
+    externals : [
+      'rxjs',
+      'rxjs/operators'
     ],
-    extensions: ['.ts', '.js']
-  },
-  module: {
-    rules: [
-      {
-        test    : /\.ts$/,
-        exclude : [/node_modules/],
-        use     : [
-          {
-            loader: 'ts-loader'
-          }
-        ]
-      }
+    output: {
+      path          : root('dist'),
+      filename      : 'rxidb.js',
+      library       : 'rxidb',
+      libraryTarget : 'umd',
+    },
+    resolve: {
+      modules: [
+        root('node_modules'),
+        root('./')
+      ],
+      extensions: ['.ts', '.js']
+    },
+    module: {
+      rules: [
+        {
+          test    : /\.ts$/,
+          exclude : [/node_modules/],
+          use     : [
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: root('tsconfig.build.json'),
+
+              }
+            }
+          ]
+        }
+      ]
+    },
+    plugins: [
+      new BundleAnalyzerPlugin({
+        analyzerMode   : 'static',
+        reportFilename : root('bundleReport.html'),
+        openAnalyzer   : false
+      })
     ]
-  },
-  plugins: [
-    new BundleAnalyzerPlugin({
-      analyzerMode   : 'static',
-      reportFilename : root('bundleReport.html'),
-      openAnalyzer   : false
-    })
-  ]
+  };
 }

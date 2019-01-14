@@ -21,7 +21,10 @@ module.exports = {
         exclude: [/node_modules/],
         use: [
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
+            options: {
+              configFile: root('cypress/tsconfig.json')
+            }
           }
         ]
       }

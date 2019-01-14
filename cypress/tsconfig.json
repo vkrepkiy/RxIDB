@@ -1,37 +1,3 @@
 {
-  "buildOnSave": false,
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "../",
-    "declaration": true,
-    "declarationDir": "./",
-    "target": "es5",
-    "skipLibCheck": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "lib": [
-      "es2015",
-      "dom",
-    ],
-    "types": [
-      "cypress",
-      "rxjs"
-    ],
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "downlevelIteration": true
-  },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": []
+  "extends": "../tsconfig.json"
 }
