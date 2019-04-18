@@ -36,13 +36,13 @@
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.0.3",
-    "cypress": "^3.1.4",
-    "rxjs": "^6.3.3",
+    "cypress": "^3.2.0",
+    "rxjs": "^6.4.0",
     "ts-loader": "^5.3.3",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.2",
-    "webpack": "^4.28.4",
-    "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.2.1"
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.3",
+    "webpack": "^4.30.0",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.3.0"
   }
 }
